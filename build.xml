@@ -1,0 +1,56 @@
+<project name="REST API examples" basedir=".">
+
+	<!--
+	Default values for common parameters. These can be overriden in command line, like:
+	> ant -Drestapi.host=restServerHostName -Drestapi.port=5555 -Drestapi.volume="My Volume Name"
+	-->
+	<property name="restapi.host" value="localhost"/>
+	<property name="restapi.port" value="5000"/>
+	<property name="restapi.volume" value="Default Volume"/>
+	
+	<path id="class.path.lib">
+		<fileset dir="lib" id="file.set.lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	
+	<mkdir dir="bin"/>
+
+	<javac
+		debug="true"
+		debuglevel="lines,source"
+		includeantruntime="false"
+		encoding="UTF8"
+		srcdir="src"
+		destdir="bin"
+		classpathref="class.path.lib"/>
+
+	<jar
+		jarfile="bin/restapi-examples.jar"
+		basedir="bin"
+		includes="com/actuate/restapi/**/*.*"/>
+
+	<macrodef name="runexample">
+		<attribute name="exampleclass" default="NOT SET"/>
+		<sequential>
+			<java
+				classname="@{exampleclass}"
+				classpathref="class.path.lib"
+				fork="true"
+				failonerror="true">
+					<jvmarg value="-Drestapi.host=${restapi.host}"/>
+					<jvmarg value="-Drestapi.port=${restapi.port}"/>
+					<jvmarg value="-Drestapi.volume=${restapi.volume}"/>
+					<classpath>
+						<pathelement location="bin/restapi-examples.jar"/>
+			        </classpath>
+			</java>
+		</sequential>
+	</macrodef>
+	
+	<!-- Run examples -->
+	<runexample exampleclass="com.actuate.restapi.example.SampleLogin"/>
+	<runexample exampleclass="com.actuate.restapi.example.SampleUser"/>
+	<runexample exampleclass="com.actuate.restapi.example.SampleFile"/>
+
+</project>
